@@ -3,7 +3,10 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+import morgan from "morgan"
 import path from "path";
+import routes from "./routes"
+import { errorHandler } from "./middlewares/error";
 
 dotenv.config();
 
@@ -14,6 +17,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"))
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -21,5 +25,16 @@ app.get("/", (req, res) => {
     message: "Application successfully loaded",
   });
 });
+
+app.use("/api", routes);
+
+app.use("*", (req, res) => {
+  res.status(404).json({
+    status: 404,
+    message: "Route not found",
+  });
+});
+
+app.use(errorHandler);
 
 export default app;

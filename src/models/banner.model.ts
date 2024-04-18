@@ -7,3 +7,17 @@ export interface BannerDoc extends Document {
     image: TImage;
     link: string;
 }
+
+const bannerSchema = new Schema<BannerDoc>({
+    title: String,
+    description: String,
+    image: {
+        id: String,
+        url: String
+    },
+    link: String
+}, {
+    timestamps: true,
+})
+
+export const Banner = model<BannerDoc>("Banner", bannerSchema)

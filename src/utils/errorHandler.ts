@@ -1,0 +1,12 @@
+class ErrorHandler extends Error {
+    public statusCode: number;
+
+    constructor(statusCode: number, message: string) {
+        super(message);
+        this.statusCode = statusCode;
+
+        Object.setPrototypeOf(this, ErrorHandler.prototype);
+    }
+}
+
+export { ErrorHandler }

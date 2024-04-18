@@ -12,3 +12,24 @@ export type Address = {
     latitude: number;
     longitude: number;
 }
+
+export type AddBanner = {
+    title: string;
+    description: string;
+    link: string;
+    image: {
+        id: string;
+        url: string;
+    }
+}
+
+export type EditBanner = {
+    title: string;
+    description: string;
+    link: string;
+    image: {
+        id: string;
+        url: string;
+    },
+    imageId: string
+}
