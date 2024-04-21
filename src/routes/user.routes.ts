@@ -1,8 +1,23 @@
 import express, { NextFunction, Request, Response } from "express";
+import { isAuthenticated } from "../middlewares";
+import { userService } from "../services";
+import { ErrorHandler } from "../utils";
 
 const router = express.Router();
 
-router.get("/profile", async (req: Request, res: Response, next: NextFunction) => { })
+router.get("/profile", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (req.user) {
+            const user = await userService.findUserWithId(req.user.id);
+            res.status(200).json(user);
+        } else {
+            return next(new ErrorHandler(404, "Unauthorized please login to access"));
+        }
+
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
 
 router.get("/addresses", async (req: Request, res: Response, next: NextFunction) => { })
 

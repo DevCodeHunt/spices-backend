@@ -29,6 +29,11 @@ export const errorHandler = (error: any, req: Request, res: Response, next: Next
         error = new ErrorHandler(400, message)
     }
 
+    if (error.name === "JsonWebTokenError:") {
+        const message = error.message
+        error = new ErrorHandler(400, message)
+    }
+
     res.status(error.statusCode).json({
         success: false,
         message: error.message,

@@ -12,7 +12,13 @@ dotenv.config();
 
 const app: Application = express();
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL as string, "*"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());

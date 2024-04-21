@@ -1,5 +1,7 @@
 import { Document, Schema, model } from "mongoose";
 import { Address, TImage } from "../types";
+import bcrypt from "bcrypt";
+import crypto from "crypto"
 
 export interface UserDoc extends Document {
   name: string;
@@ -29,7 +31,8 @@ const addressSchema = new Schema({
   zip: String,
   country: String,
   latitude: Number,
-  longitude: Number
+  longitude: Number,
+  isActive: Boolean,
 })
 
 const userSchema = new Schema<UserDoc>({
@@ -51,7 +54,6 @@ const userSchema = new Schema<UserDoc>({
   },
   phone: {
     type: Number,
-    required: true
   },
   subscribed: {
     type: Boolean,
@@ -117,5 +119,16 @@ const userSchema = new Schema<UserDoc>({
     },
   },
 })
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+
+  const hashedPassword = await bcrypt.hash(this.password, 10);
+  this.password = hashedPassword;
+
+  next();
+});
 
 export const User = model<UserDoc>("User", userSchema);

@@ -1,6 +1,5 @@
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary'
 import dotenv from "dotenv";
-import { NextFunction } from 'express';
 import { ErrorHandler } from './errorHandler';
 dotenv.config()
 
@@ -10,7 +9,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_SECRET_KEY
 });
 
-interface UploadedFile extends Express.Multer.File { }
+export interface UploadedFile extends Express.Multer.File { }
 
 export const uploadImage = async (file: UploadedFile) => {
 
@@ -25,8 +24,27 @@ export const uploadImage = async (file: UploadedFile) => {
             url: result.secure_url
         }
     } catch (error: any) {
-        console.error('Error uploading image:', error);
+        console.error('Error uploading image:', error.message);
         throw new ErrorHandler(500, error.message)
+    }
+};
+
+export const uploadImages = async (files: UploadedFile[]) => {
+    
+    try {
+        const uploadResults = await Promise.all(files.map(async (file) => {
+            const b64 = Buffer.from(file.buffer).toString("base64");
+            const dataURI = "data:" + file.mimetype + ";base64," + b64;
+            const result: UploadApiResponse = await cloudinary.uploader.upload(dataURI);
+            return {
+                id: result.public_id,
+                url: result.secure_url
+            };
+        }));
+        return uploadResults;
+    } catch (error: any) {
+        console.error('Error uploading images:', error.message);
+        throw new ErrorHandler(500, error.message);
     }
 };
 

@@ -11,6 +11,7 @@ export type Address = {
     country: string;
     latitude: number;
     longitude: number;
+    isActive: boolean;
 }
 
 export type AddBanner = {
@@ -33,3 +34,29 @@ export type EditBanner = {
     },
     imageId: string
 }
+
+export type SignUpInput = {
+    email: string;
+    password: string;
+    name: string;
+    confirmPassword: string;
+    acceptTerms: boolean
+    subscribed: boolean
+}
+
+export type SignInInput = {
+    email: string;
+    password: string;
+
+}
+
+
+export type AuthPayload = {
+    id: string;
+    email: string;
+}
+
+export type TokenPair = {
+    access_token: string;
+    refresh_token: string;
+};
