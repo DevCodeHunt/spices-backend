@@ -54,9 +54,27 @@ export type SignInInput = {
 export type AuthPayload = {
     id: string;
     email: string;
+    role: string | string[];
 }
 
 export type TokenPair = {
     access_token: string;
     refresh_token: string;
 };
+
+export interface AddProduct {
+    images: TImage[];
+    name: string;
+    price: number;
+    description: string;
+    category: string;
+    discountPrice: number;
+    discountPercentage: number;
+    discountType: string;
+    discountStartDate: Date;
+    discountEndDate: Date;
+    stock: number;
+    shippingPrice: number;
+    barCode: string;
+    sku: string;
+}

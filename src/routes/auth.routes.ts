@@ -94,6 +94,7 @@ router.post("/signin", async (req: Request, res: Response, next: NextFunction) =
     const { access_token, refresh_token } = authService.generateSignature({
         id: user.id,
         email: user.email,
+        role: user.roles
     })
 
     res.cookie('spicesRefreshToken', refresh_token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
@@ -129,6 +130,7 @@ router.get("/refresh-token", async (req: Request, res: Response, next: NextFunct
         const { access_token, refresh_token } = authService.generateSignature({
             id: user.id,
             email: user.email,
+            role: user.roles
         })
 
         res.cookie('spicesRefreshToken', refresh_token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });

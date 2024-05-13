@@ -9,7 +9,11 @@ declare global {
             user?: AuthPayload;
         }
     }
-} export const isAuthenticated = async (
+}
+
+
+
+export const isAuthenticated = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -45,4 +49,45 @@ declare global {
     }
 
 };
+
+
+
+export const isAdmin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction) => {
+    try {
+        if (!req.user) {
+            return next(new ErrorHandler(401, "You are not logged in for this application. Please login"));
+        }
+
+        const userRole = req.user.role;
+        
+
+        if ((typeof userRole === 'string' && userRole !== 'admin') ||
+            (Array.isArray(userRole) && !userRole.includes('admin'))) {
+            return next(new ErrorHandler(401, "Only admin can perform this action."))
+        }
+
+        next();
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+}
+
+export const authorizeRoles = (...roles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+
+        if (!roles.includes(user.role)) {
+            return next(
+                new Error(`Role: ${user.role} is not allowed to access this resource`)
+            );
+        }
+
+        next();
+    };
+};
+
+
 

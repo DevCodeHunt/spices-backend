@@ -10,7 +10,7 @@ export interface ReviewDoc extends Document {
 export interface ProductDoc extends Document {
     name: string;
     price: number;
-    description: string;
+    description: any[any];
     category: string;
     images: TImage[];
     discountPrice: number;
@@ -45,7 +45,7 @@ export const reviewSchema = new Schema(
 const productSchema = new Schema<ProductDoc>({
     name: { type: String, required: true },
     price: { type: Number, required: true },
-    description: { type: String, required: true },
+    description: { type: Array, required: true },
     category: { type: String, required: true },
     images: [{
         id: String,

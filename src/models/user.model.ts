@@ -21,7 +21,8 @@ export interface UserDoc extends Document {
   carts: [any];
   addresses: Address[];
   compares: [any];
-  likesBlogs: [any]
+  likesBlogs: [any];
+  roles: string[];
 }
 
 const addressSchema = new Schema({
@@ -107,7 +108,11 @@ const userSchema = new Schema<UserDoc>({
       type: Schema.Types.ObjectId,
       ref: "Blog"
     }
-  ]
+  ],
+  roles: {
+    type: [String],
+    default: ["user"]
+  }
 }, {
   timestamps: true,
   toJSON: {
