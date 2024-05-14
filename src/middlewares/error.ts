@@ -17,9 +17,16 @@ export const errorHandler = (error: any, req: Request, res: Response, next: Next
         error = new ErrorHandler(400, message)
     }
 
+    
+
     // Wrong JWT Error
     if (error.name === "TokenExpiredError") {
         const message = 'Invalid JWT. Please provide a valid token.';
+        error = new ErrorHandler(400, message)
+    }
+
+    if(error.message === "jwt expired"){
+        const message = 'Token expired';
         error = new ErrorHandler(400, message)
     }
 

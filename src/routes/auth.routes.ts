@@ -1,9 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
 import { ErrorHandler } from "../utils";
-import { authService, userService } from "../services";
+import { authService, mailService, userService } from "../services";
 import { isAuthenticated } from "../middlewares";
 
-
+const CLIENT_URL = process.env.CLIENT_URL
 const router = express.Router();
 
 router.post("/signup", async (req: Request, res: Response, next: NextFunction) => {
@@ -47,10 +47,16 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
         confirmPassword,
         acceptTerms: Boolean(acceptTerms),
         subscribed: Boolean(subscribed),
-        verified: true,
     }
 
     const user = await authService.signup(values)
+    const token = authService.generateVerifyEmailToken(email)
+    const href = `${CLIENT_URL}/verification-mail?token=${`${token}&email=${email}`}`;
+    await mailService.forgotPasswordMail(
+        { name: user.name, email, href },
+        "verify-account",
+        next
+    );
 
     res.status(201).json(user)
 
@@ -58,10 +64,65 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
 })
 
 
-router.post("/verify", async (req: Request, res: Response, next: NextFunction) => { })
+router.post("/verify", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { token } = req.body;
+        if (!token) {
+            return next(new ErrorHandler(400, "Token is required."))
+        }
+
+        const payload = authService.verifyEmailToken(token)
+        if (!payload) {
+            return next(new ErrorHandler(400, "Invalid token."))
+        }
+        const user = await userService.findUserWithEmail(payload.email)
+        if (!user) {
+            return next(new ErrorHandler(400, "User not found."))
+        }
+
+        if (user.verified) {
+            return next(new ErrorHandler(400, "Email is already verified."))
+        }
+
+        user.verified = true
+        await user.save()
+
+        res.status(200).json({
+            message: "Email is verified."
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
 
 
-router.post("/send-verification-mail", async (req: Request, res: Response, next: NextFunction) => { })
+router.post("/send-verification-mail", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.body
+        if (!email) {
+            return next(new ErrorHandler(400, "Email is required."))
+        }
+        const user = await userService.findUserWithEmail(email)
+        if (!user) {
+            return next(new ErrorHandler(400, "User not found."))
+        }
+        if (user.verified) {
+            return next(new ErrorHandler(400, "Email is already verified."))
+        }
+        const token = authService.generateVerifyEmailToken(email)
+        const href = `${CLIENT_URL}/verification-mail?token=${`${token}&email=${email}`}`;
+        await mailService.verifyMail(
+            { name: user.name, email, href },
+            "verify-account",
+            next
+        );
+        res.status(200).json({
+            message: "Verification mail sent."
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
 
 
 router.post("/signin", async (req: Request, res: Response, next: NextFunction) => {
@@ -107,10 +168,76 @@ router.post("/signin", async (req: Request, res: Response, next: NextFunction) =
 })
 
 
-router.post("/forgot-password", async (req: Request, res: Response, next: NextFunction) => { })
+router.post("/forgot-password", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.body
+        if (!email) {
+            return next(new ErrorHandler(400, "Email is required."))
+        }
+
+        const user = await userService.findUserWithEmail(email);
+        if (!user) {
+            return next(new ErrorHandler(400, "User does not exit."))
+        }
+
+        const resetToken = authService.passwordResetToken(email)
+
+        const href = `${CLIENT_URL}/reset-password?token=${`${resetToken}`}`;
+
+        await mailService.forgotPasswordMail(
+            { name: user.name, email, href },
+            "forgot-password",
+            next
+        );
+        res.status(200).json({
+            message: `Reset password link has been sent to your email (${email}).`,
+            token: resetToken,
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
 
 
-router.post("/reset-password", async (req: Request, res: Response, next: NextFunction) => { })
+router.patch("/reset-password", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const { newPassword, confirmPassword, token } = req.body;
+
+        if (!token) {
+            return next(new ErrorHandler(400, "Token is required."))
+        }
+        if (!newPassword) {
+            return next(new ErrorHandler(400, "Password is required."))
+        }
+        if (!confirmPassword) {
+            return next(new ErrorHandler(400, "Confirm password is required."))
+        }
+        if (newPassword !== confirmPassword) {
+            return next(new ErrorHandler(400, "Password does not match."))
+        }
+
+        const verifyToken = authService.verifyPasswordResetToken(token);
+        if (!verifyToken) {
+            return next(new ErrorHandler(400, "Token expired."))
+        }
+
+        const { email } = verifyToken
+        const user = await userService.findUserWithEmail(email);
+        if (!user) {
+            return next(new ErrorHandler(400, "User does not exit."))
+        }
+        user.password = newPassword
+        await user.save()
+        res.status(200).json({
+            message: "Password has been reset successfully.",
+
+        })
+
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
 
 router.get("/refresh-token", async (req: Request, res: Response, next: NextFunction) => {
     try {
