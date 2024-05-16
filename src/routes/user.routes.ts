@@ -44,15 +44,175 @@ router.patch("/addresses/:id", async (req: Request, res: Response, next: NextFun
 router.delete("/addresses:/id", async (req: Request, res: Response, next: NextFunction) => { })
 
 
-router.post("/cart/add", async (req: Request, res: Response, next: NextFunction) => { })
+router.post("/carts/add", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        if (!user) {
+            return next(new ErrorHandler(404, "Unauthorized please login to add to wishlist"))
+        }
 
-router.post("/cart/remove", async (req: Request, res: Response, next: NextFunction) => { })
+        const findUser = await userService.findUserWithId(user.id)
+        if (!findUser) {
+            return next(new ErrorHandler(404, "User not found"))
+        }
 
-router.post("/cart/increment", async (req: Request, res: Response, next: NextFunction) => { })
+        const { productId, quantity } = req.body
 
-router.post("/cart/decrement", async (req: Request, res: Response, next: NextFunction) => { })
+        const product = await productService.getProductById(productId);
+        if (!product) {
+            return next(new ErrorHandler(404, "Product not found"))
+        }
+        const existingCartItem = findUser.carts.find(item => item.product.toString() === productId);
 
-router.post("/cart/remove/all", async (req: Request, res: Response, next: NextFunction) => { })
+        if (existingCartItem) {
+            existingCartItem.quantity = quantity
+        } else {
+            findUser.carts.push({
+                product: productId,
+                quantity: quantity
+            })
+        }
+
+        await findUser.save()
+
+
+        res.status(200).json({
+            message: `${quantity} item added to cart`,
+            cart: findUser.carts
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
+
+router.post("/carts/remove", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        if (!user) {
+            return next(new ErrorHandler(404, "Unauthorized please login to add to wishlist"))
+        }
+
+        const findUser = await userService.findUserWithId(user.id)
+        if (!findUser) {
+            return next(new ErrorHandler(404, "User not found"))
+        }
+
+        const { productId } = req.body
+
+        const product = await productService.getProductById(productId);
+        if (!product) {
+            return next(new ErrorHandler(404, "Product not found"))
+        }
+        const existingCartItemIndex = findUser.carts.findIndex((item: any) => item.product._id.toString() === productId);
+
+    
+        if (existingCartItemIndex !== -1) {
+            findUser.carts.splice(existingCartItemIndex, 1);
+        }
+
+        await findUser.save()
+        res.status(200).json({
+            message: "Item removed from cart",
+            cart: findUser.carts
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
+
+router.post("/carts/increment", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        if (!user) {
+            return next(new ErrorHandler(404, "Unauthorized please login to add to wishlist"))
+        }
+
+        const findUser = await userService.findUserWithId(user.id)
+        if (!findUser) {
+            return next(new ErrorHandler(404, "User not found"))
+        }
+
+        const { productId } = req.body
+
+        const product = await productService.getProductById(productId);
+        if (!product) {
+            return next(new ErrorHandler(404, "Product not found"))
+        }
+        const existingCartItem = findUser.carts.find((item: any) => item.product._id.toString() === productId);
+
+        if (existingCartItem) {
+            if (existingCartItem.quantity + 1 > product.stock) {
+                return next(new ErrorHandler(400, "You have reached the limit. Not enough stock"));
+            }
+            existingCartItem.quantity += 1
+        }
+
+        await findUser.save()
+        res.status(200).json(findUser.carts)
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
+
+router.post("/carts/decrement", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        if (!user) {
+            return next(new ErrorHandler(404, "Unauthorized please login to add to wishlist"))
+        }
+
+        const findUser = await userService.findUserWithId(user.id)
+        if (!findUser) {
+            return next(new ErrorHandler(404, "User not found"))
+        }
+
+        const { productId } = req.body
+
+        const product = await productService.getProductById(productId);
+        if (!product) {
+            return next(new ErrorHandler(404, "Product not found"))
+        }
+        const existingCartItemIndex = findUser.carts.findIndex((item: any) => item.product._id.toString() === productId);
+
+        if (existingCartItemIndex !== -1) {
+            const existingCartItem = findUser.carts[existingCartItemIndex];
+            if (existingCartItem.quantity > 1) {
+                existingCartItem.quantity -= 1;
+            } else {
+                findUser.carts.splice(existingCartItemIndex, 1);
+            }
+        }
+
+        await findUser.save()
+        res.status(200).json(findUser.carts)
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
+
+router.post("/carts/removeAll", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        if (!user) {
+            return next(new ErrorHandler(404, "Unauthorized please login to add to wishlist"))
+        }
+
+        const findUser = await userService.findUserWithId(user.id)
+        if (!findUser) {
+            return next(new ErrorHandler(404, "User not found"))
+        }
+        findUser.carts = [] as any
+        await findUser.save()
+        res.status(200).json({
+            user: findUser,
+            message: "All items removed from cart"
+        })
+
+
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
 
 router.post("/wishlists", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -112,7 +272,7 @@ router.post("/wishlists/removeAll", isAuthenticated, async (req: Request, res: R
         await findUser.save()
         res.status(200).json({
             user: findUser,
-            message: "Removed from wishlist",
+            message: "All product removed from wishlist",
         })
 
 

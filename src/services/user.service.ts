@@ -14,7 +14,7 @@ class UserService {
     }
 
     async findUserWithId(id: string): Promise<UserDoc | null> {
-        return await User.findById(id).populate("wishlists");
+        return await User.findById(id).populate("wishlists").populate("carts.product");
     }
 
     async createUserName(email: string) {

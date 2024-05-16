@@ -3,6 +3,11 @@ import { Address, TImage } from "../types";
 import bcrypt from "bcrypt";
 import crypto from "crypto"
 
+interface CartItem {
+  product: Schema.Types.ObjectId;
+  quantity: number;
+}
+
 export interface UserDoc extends Document {
   name: string;
   username: string;
@@ -18,12 +23,23 @@ export interface UserDoc extends Document {
   profileImg: TImage;
   orders: [any];
   wishlists: [any];
-  carts: [any];
+  carts: CartItem[];
   addresses: Address[];
   compares: [any];
   likesBlogs: [any];
   roles: string[];
 }
+
+const cartItemSchema = new Schema({
+  product: {
+    type: Schema.Types.ObjectId,
+    ref: "Product"
+  },
+  quantity: {
+    type: Number,
+    default: 1
+  }
+});
 
 const addressSchema = new Schema({
   street: String,
@@ -91,10 +107,7 @@ const userSchema = new Schema<UserDoc>({
     }
   ],
   carts: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Product"
-    }
+    cartItemSchema
   ],
   addresses: [addressSchema],
   compares: [

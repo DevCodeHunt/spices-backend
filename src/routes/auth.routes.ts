@@ -161,7 +161,7 @@ router.post("/signin", async (req: Request, res: Response, next: NextFunction) =
     res.cookie('spicesRefreshToken', refresh_token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
     res.status(200).json({
         access_token,
-        refresh_token
+        user
     })
 
 
