@@ -77,4 +77,26 @@ export interface AddProduct {
     shippingPrice: number;
     barCode: string;
     sku: string;
+    
+}
+
+export interface AdminProduct {
+    _id: string;
+    name: string;
+    image: string;
+    stock: number;
+    price: number;
+    salesPerDay: number;
+    salesPerMonth: number;
+    totalSales: number;
+    createdAt: Date;
+    updatedAt: Date;
+    revenue: number;
+    purchased: number;
+    rating:{
+        count: number;
+        average: number;
+    },
+    purchasedAt: Date;
+    category: string
 }

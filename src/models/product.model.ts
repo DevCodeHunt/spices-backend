@@ -14,7 +14,6 @@ export interface ProductDoc extends Document {
     category: string;
     images: TImage[];
     discountPrice: number;
-    discountPercentage: number;
     discountType: string;
     discountStartDate: Date;
     discountEndDate: Date;
@@ -52,7 +51,6 @@ const productSchema = new Schema<ProductDoc>({
         url: String
     }],
     discountPrice: Number,
-    discountPercentage: Number,
     discountType: String,
     discountStartDate: Date,
     discountEndDate: Date,

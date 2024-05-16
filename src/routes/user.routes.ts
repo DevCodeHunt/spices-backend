@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import { isAuthenticated } from "../middlewares";
-import { userService } from "../services";
+import { productService, userService } from "../services";
 import { ErrorHandler } from "../utils";
 
 const router = express.Router();
@@ -54,7 +54,72 @@ router.post("/cart/decrement", async (req: Request, res: Response, next: NextFun
 
 router.post("/cart/remove/all", async (req: Request, res: Response, next: NextFunction) => { })
 
-router.post("/wishlists", async (req: Request, res: Response, next: NextFunction) => { })
+router.post("/wishlists", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        if (!user) {
+            return next(new ErrorHandler(404, "Unauthorized please login to add to wishlist"))
+        }
+
+        const findUser = await userService.findUserWithId(user.id)
+        if (!findUser) {
+            return next(new ErrorHandler(404, "User not found"))
+        }
+
+        const { productId } = req.body
+
+
+        const product = await productService.getProductById(productId)
+        if (!product) {
+            return next(new ErrorHandler(404, "Product not found"))
+        }
+
+        const alreadyAdded = findUser.wishlists.find(wishlist => wishlist.id === productId);
+
+        if (alreadyAdded) {
+            const data = await userService.removeFromWishlist(user?.id, productId);
+            return res.status(200).json({
+                user: data,
+                message: "Removed from wishlist",
+            })
+        } else {
+            const data = await userService.addToWishlist(user?.id, productId);
+            return res.status(200).json({
+                user: data,
+                message: "Added to wishlist",
+            })
+        }
+
+
+
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
+
+router.post("/wishlists/removeAll", isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        if (!user) {
+            return next(new ErrorHandler(404, "Unauthorized please login to add to wishlist"))
+        }
+
+        const findUser = await userService.findUserWithId(user.id)
+        if (!findUser) {
+            return next(new ErrorHandler(404, "User not found"))
+        }
+        findUser.wishlists = [] as any
+        await findUser.save()
+        res.status(200).json({
+            user: findUser,
+            message: "Removed from wishlist",
+        })
+
+
+    } catch (error: any) {
+        return next(new ErrorHandler(500, error.message))
+    }
+})
 
 router.post("/orders/create", async (req: Request, res: Response, next: NextFunction) => { })
 

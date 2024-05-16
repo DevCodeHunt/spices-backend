@@ -10,14 +10,24 @@ cloudinary.config({
 });
 
 export interface UploadedFile extends Express.Multer.File { }
-
-export const uploadImage = async (file: UploadedFile) => {
+interface UploadOptions {
+    width?: number;
+    height?: number;
+    crop?: string;
+}
+export const uploadImage = async (file: UploadedFile, width?: number, height?: number) => {
 
     try {
         const b64 = Buffer.from(file.buffer).toString("base64");
         const dataURI = "data:" + file.mimetype + ";base64," + b64;
+        const options: UploadOptions = {};
 
-        const result: UploadApiResponse = await cloudinary.uploader.upload(dataURI);
+        if (width && height) {
+            options['width'] = width;
+            options['height'] = height;
+            options['crop'] = "fill";
+        }
+        const result: UploadApiResponse = await cloudinary.uploader.upload(dataURI, options);
 
         return {
             id: result.public_id,
@@ -29,13 +39,20 @@ export const uploadImage = async (file: UploadedFile) => {
     }
 };
 
-export const uploadImages = async (files: UploadedFile[]) => {
-    
+export const uploadImages = async (files: UploadedFile[], width?: number, height?: number) => {
+
     try {
         const uploadResults = await Promise.all(files.map(async (file) => {
             const b64 = Buffer.from(file.buffer).toString("base64");
             const dataURI = "data:" + file.mimetype + ";base64," + b64;
-            const result: UploadApiResponse = await cloudinary.uploader.upload(dataURI);
+            const options: UploadOptions = {};
+
+            if (width && height) {
+                options['width'] = width;
+                options['height'] = height;
+                options['crop'] = "fill";
+            }
+            const result: UploadApiResponse = await cloudinary.uploader.upload(dataURI, options);
             return {
                 id: result.public_id,
                 url: result.secure_url
