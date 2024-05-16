@@ -27,7 +27,8 @@ app.use(morgan("dev"));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  // await redisClient.set('foo', 'bar');
   res.status(200).json({
     status: 200,
     message: "Application successfully loaded",
