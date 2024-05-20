@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spices</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        background-color: #f3f3f320;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        max-width: 700px;
+        width: 100%;
+        margin: 20px auto;
+        font-family: monospace;
+      }
+
+      .card {
+        width: 100%;
+        background-color: #fff;
+        border: 1px solid #99999930;
+        border-radius: 4px;
+        padding: 20px;
+        font-size: 16px;
+      }
+
+      .title {
+        line-height: 2rem;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      p {
+        font-size: 14px;
+        color: #050505;
+        margin-block: 20px;
+      }
+
+      .name {
+        color: black;
+        font-weight: 600;
+      }
+
+      .btn {
+        text-decoration: none;
+        padding: 12px 36px;
+        border-radius: 4px;
+        border: none;
+        background-color: #48bb78;
+        color: #fff !important;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .order-summary {
+        border: 1px solid #99999930;
+        border-radius: 8px;
+        display: flex;;
+        margin-top: 40px;
+        margin-bottom: 40px;
+      }
+
+      /* .products {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      } */
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h2 style="text-align: center">Your order has been confirmed</h2>
+        <p style="text-align: center">
+          Thank you for your purchase! We are pleased to confirm your order
+          #12345.
+        </p>
+
+        <div class="order-summary">
+          <div style="border-right: 1px solid #99999930; padding: 20px; width: 50%;">
+            <h4 style="margin-bottom: 10px">ORDER SUMMARY</h4>
+
+            <div
+              style="
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between !important;
+              "
+            >
+              <span style="font-weight: 500">Order#</span>
+              <span>#1234567890</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-block: 10px;
+              "
+            >
+              <span style="font-weight: 500">Order Date</span>
+              <span>20 Jan, 2024</span>
+            </div>
+
+            <div
+              style="
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                margin-block: 10px !important;
+              "
+            >
+              <span style="font-weight: 500;">Order Total</span>
+              <span>$58</span>
+            </div>
+          </div>
+
+          <div style="padding: 20px; width: 50%;">
+            <h4 style="margin-bottom: 10px">SHIPPING ADDRESS</h4>
+
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span style="font-weight: 500">ABC Wall Street 127021</span>
+              <span>New York, NewYork (127032)</span>
+              <span>USA</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="
+            width: 100%;
+            height: 1px;
+            background-color: #99999960;
+            border-radius: 10px;
+            margin-block: 1rem;
+          "
+        ></div>
+
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
+          <p>TOTAL ITEMS: 6</p>
+          <a href="#" target="_blank" class="btn">Track Order</a>
+        </div>
+
+        <div
+          style="
+            width: 100%;
+            height: 1px;
+            background-color: #99999960;
+            border-radius: 10px;
+            margin-block: 1rem;
+          "
+        ></div>
+
+        <div
+          class="products"
+          
+        >
+          <div
+            class="product"
+            style="display: flex; gap: 1rem; position: relative"
+          >
+            <img
+              src="https://res.cloudinary.com/dx63kqko3/image/upload/v1715767519/aumq2fxte1csurgca5ph.jpg"
+              alt="product-image"
+              width="120"
+              height="120"
+              style="border-radius: 16px"
+            />
+
+            <div style="flex: 1">
+              <h4>Danyia Powder</h4>
+              <div
+                style="display: flex; align-items: center; margin-block: 8px"
+              >
+                <span
+                  style="
+                    background-color: #ff000020;
+                    font-size: 14px;
+                    color: #ff0000;
+                    padding: 4px 8px;
+                  "
+                  >10%</span
+                >
+                <del style="margin-left: 8px; opacity: 0.7">$30</del>
+              </div>
+              <h4 style="margin-bottom: 8px">$50</h4>
+              <span>2 item(s)</span>
+            </div>
+
+            <span
+              style="
+                position: absolute;
+                right: 1rem;
+                top: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Category
+            </span>
+          </div>
+
+          <div
+            class="product"
+            style="display: flex; gap: 1rem; position: relative"
+          >
+            <img
+              src="https://res.cloudinary.com/dx63kqko3/image/upload/v1715767519/aumq2fxte1csurgca5ph.jpg"
+              alt="product-image"
+              width="120"
+              height="120"
+              style="border-radius: 16px"
+            />
+
+            <div style="flex: 1">
+              <h4>Danyia Powder</h4>
+              <div
+                style="display: flex; align-items: center; margin-block: 8px"
+              >
+                <span
+                  style="
+                    background-color: #ff000020;
+                    font-size: 14px;
+                    color: #ff0000;
+                    padding: 4px 8px;
+                  "
+                  >10%</span
+                >
+                <del style="margin-left: 8px; opacity: 0.7">$30</del>
+              </div>
+              <h4 style="margin-bottom: 8px">$50</h4>
+              <span>2 item(s)</span>
+            </div>
+
+            <span
+              style="
+                position: absolute;
+                right: 1rem;
+                top: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Category
+            </span>
+          </div>
+
+          <div
+            class="product"
+            style="display: flex; gap: 1rem; position: relative"
+          >
+            <img
+              src="https://res.cloudinary.com/dx63kqko3/image/upload/v1715767519/aumq2fxte1csurgca5ph.jpg"
+              alt="product-image"
+              width="120"
+              height="120"
+              style="border-radius: 16px"
+            />
+
+            <div style="flex: 1">
+              <h4>Danyia Powder</h4>
+              <div
+                style="display: flex; align-items: center; margin-block: 8px"
+              >
+                <span
+                  style="
+                    background-color: #ff000020;
+                    font-size: 14px;
+                    color: #ff0000;
+                    padding: 4px 8px;
+                  "
+                  >10%</span
+                >
+                <del style="margin-left: 8px; opacity: 0.7">$30</del>
+              </div>
+              <h4 style="margin-bottom: 8px">$50</h4>
+              <span>2 item(s)</span>
+            </div>
+
+            <span
+              style="
+                position: absolute;
+                right: 1rem;
+                top: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Category
+            </span>
+          </div>
+        </div>
+
+        <div
+          style="
+            width: 100%;
+            height: 1px;
+            background-color: #99999960;
+            border-radius: 10px;
+            margin-block: 1rem;
+          "
+        ></div>
+
+        <div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-block: 1rem;
+            "
+          >
+            <span>Subtotal:</span>
+            <span>$234</span>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-block: 1rem;
+            "
+          >
+            <span>Discount:</span>
+            <span>$234</span>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-block: 1rem;
+            "
+          >
+            <span>Total:</span>
+            <span>$234</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
